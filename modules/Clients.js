@@ -7,7 +7,7 @@ module.exports = function(config) {
     /*
      * --- VARS ---
      */
-
+     
     
     this.clients = [];
 

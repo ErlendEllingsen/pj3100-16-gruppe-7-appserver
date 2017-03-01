@@ -28,9 +28,29 @@ module.exports = function(router, app_package, config) {
             //res.send(new_uuid);
 
             
-
+            return;
 
             //end /device/init 
+        });
+
+        router.use('/device/', function(req, res, next){
+
+            //Check UUID
+            if (req.headers['dnbsmart-uuid'] == undefined) {
+                res.json({
+                    status: false,
+                    msg: 'missing uuid'
+                });
+                return;
+            }
+
+            //Validate uuid 
+            //TODO: VALIDATE
+
+            next();
+
+
+            //end /device/*
         });
 
 
