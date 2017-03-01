@@ -29,6 +29,26 @@ app.use(bodyParser.json());
 // =============================================================================
 http.createServer(app).listen(http_port);
 
+//PRODUCTION - ENABLE SSL 
+if (!devmode) {
+
+    // LOAD SSL
+    var privateKey = fs.readFileSync( '/etc/letsencrypt/live/dnbsmart.jungleflake.com/privkey.pem' );
+    var certificate = fs.readFileSync( '/etc/letsencrypt/live/dnbsmart.jungleflake.com/cert.pem' );
+
+
+    // START THE SERVER
+    // =============================================================================
+    http.createServer(app).listen(port);
+    https.createServer({
+        key: privateKey,
+        cert: certificate 
+    }, app).listen(portSSL);
+
+    //end production launch configuration
+}
+
+
 console.log(colors.yellow('CORE') + ' Enabled ' + colors.bold('HTTP') + ' at ' + http_port);
 
 /**
