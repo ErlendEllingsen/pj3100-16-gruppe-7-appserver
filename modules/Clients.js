@@ -27,6 +27,11 @@ module.exports = function(config) {
 
         //end init 
     }
+
+    this.add = function(client) {
+        self.clients[client.uuid] = client; 
+        console.log('[' + colors.green('Clients') + '] Client @ ' + client.uuid + ' added.');
+    }
     
 
     /*
@@ -55,7 +60,9 @@ module.exports = function(config) {
         var writtenClients = '[]';
         try {
             writtenClients = JSON.stringify(self.clients);
-        } catch (err)  {}
+        } catch (err)  {
+            console.log(err);
+        }
 
         fs.writeFileSync('./db/clients.json', writtenClients);
 

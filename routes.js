@@ -20,7 +20,7 @@ module.exports = function(router, app_package, config) {
         router.get('/device/init', function(req, res) {
 
             var client = new config.classes['Client'](config);
-
+            config.vars.clients.add(client);
 
             res.json(client);
 
@@ -44,13 +44,31 @@ module.exports = function(router, app_package, config) {
                 return;
             }
 
-            //Validate uuid 
-            //TODO: VALIDATE
+            var header_uuid = req.headers['dnbsmart-uuid'];
 
+            //Validate uuid 
+            var clients = config.vars.clients;
+            if (clients.clients[header_uuid] == undefined) {
+                res.json({
+                    status: false,
+                    msg: 'invalid uuid'
+                });
+                return;
+            }
+
+
+            //Next
             next();
 
 
             //end /device/*
+        });
+
+        router.get('/device/fetch', function(req, res){
+
+            var client = config.vars.clients.clients[req.headers['dnbsmart-uuid']];
+            res.json(client);
+
         });
 
 
