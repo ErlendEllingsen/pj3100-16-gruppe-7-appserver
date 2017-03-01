@@ -1,0 +1,25 @@
+{
+  "name": "pj3100-16-gruppe-7-appserver",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ErlendEllingsen/pj3100-16-gruppe-7-appserver.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ErlendEllingsen/pj3100-16-gruppe-7-appserver/issues"
+  },
+  "homepage": "https://github.com/ErlendEllingsen/pj3100-16-gruppe-7-appserver#readme",
+  "dependencies": {
+    "body-parser": "^1.16.1",
+    "colors": "^1.1.2",
+    "expressjs": "^1.0.1"
+  }
+}
