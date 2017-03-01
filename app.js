@@ -39,11 +39,11 @@ if (!devmode) {
 
     // START THE SERVER
     // =============================================================================
-    http.createServer(app).listen(port);
+
     https.createServer({
         key: privateKey,
         cert: certificate 
-    }, app).listen(portSSL);
+    }, app).listen(https_port);
 
     //end production launch configuration
 }
