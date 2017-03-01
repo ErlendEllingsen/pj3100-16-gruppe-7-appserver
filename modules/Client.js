@@ -54,6 +54,7 @@ module.exports = function(config){
             goal_max: 120000
         }];
 
+        //Add default  saving accounts
         for (var i = 0; i < defaultSavingsAccounts.length; i++) {
             var account = defaultSavingsAccounts[i];
             userSavingsAccounts[account.name] = {
@@ -62,6 +63,7 @@ module.exports = function(config){
             };
         }
 
+        //Add alternative saving accounts
         for (var i = 0; i < alternativeSavingsAccount.length; i++) {
             if (Math.floor((Math.random() * 10) + 1) > 5) continue; //50% chance
             var account = alternativeSavingsAccount[i];
