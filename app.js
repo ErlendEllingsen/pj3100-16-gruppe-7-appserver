@@ -46,7 +46,7 @@ var Client = require('./modules/Client');
 //Store links to config 
 config.classes['Clients'] = Clients;
 config.classes['Client'] = Client;
-config.vars['clients'] = clients;
+config.vars.clients = clients;
 
 
 var routesClass = require('./routes.js');

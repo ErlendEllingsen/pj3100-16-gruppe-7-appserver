@@ -9,7 +9,7 @@ module.exports = function(config) {
      */
      
     
-    this.clients = [];
+    this.storedClients = {};
 
     this.saveInterval = null;
 
@@ -29,8 +29,15 @@ module.exports = function(config) {
     }
 
     this.add = function(client) {
-        self.clients[client.uuid] = client; 
+
+        //console.log(JSON.stringify(client));
+        var obj = JSON.parse(JSON.stringify(client));
+        client = obj;
+        
         console.log('[' + colors.green('Clients') + '] Client @ ' + client.uuid + ' added.');
+
+        self.storedClients[client.uuid] = client;
+        
     }
     
 
@@ -46,7 +53,7 @@ module.exports = function(config) {
             loaded_clients = JSON.parse(fs.readFileSync('./db/clients.json'));
         } catch (err) {}
 
-        self.clients = loaded_clients;
+        self.storedClients = loaded_clients;
     
         console.log('[' + colors.yellow('Clients') + '] clients loaded from db..');
     
@@ -59,7 +66,7 @@ module.exports = function(config) {
         
         var writtenClients = '[]';
         try {
-            writtenClients = JSON.stringify(self.clients);
+            writtenClients = JSON.stringify(self.storedClients);
         } catch (err)  {
             console.log(err);
         }
