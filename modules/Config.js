@@ -13,7 +13,7 @@ module.exports = function() {
     this.settings = {
         sums: {
             min: 500,
-            max: 150000
+            max: 25000
         }
     };
 

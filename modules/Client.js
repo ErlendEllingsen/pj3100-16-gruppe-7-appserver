@@ -1,5 +1,6 @@
 var uuid = require('uuid');
 var Faker = require('Faker2');
+var moment = require('moment');
 
 module.exports = function(config){
 
@@ -20,7 +21,13 @@ module.exports = function(config){
         savings: []
     };
 
-    this.finance.budgets = {};
+    //Transactions
+    this.finance.transactions = {}; 
+
+    //Budgets
+    this.finance.budgets = {
+        daily: 0
+    };
 
 
     this.createSavingsAccounts = function() {
@@ -78,9 +85,21 @@ module.exports = function(config){
         //end createSavingsAccounts
     }
 
+    this.createDailyBudget = function() {
+
+        var a = moment().endOf('month');
+        var b = moment().today;
+        var days = a.diff(b, 'days');
+
+        self.finance.budgets.daily = Math.floor(self.finance.accounts.default / days);
+
+        //end createDailyBudget
+    }
+
 
     //--- RUN INIT LOGIC ---
     self.createSavingsAccounts();    
+    self.createDailyBudget();
 
     //end Client 
 }
