@@ -1,4 +1,5 @@
 var uuid = require('uuid');
+var moment = require('moment');
 
 
 module.exports = function(router, app_package, config) {
@@ -21,6 +22,9 @@ module.exports = function(router, app_package, config) {
 
             var client = new config.classes['Client'](config);
             config.vars.clients.add(client);
+
+            //Add date
+            client.currentDate = moment().format('DD.MM.YYYY');
 
             res.json(client);
 
@@ -71,6 +75,10 @@ module.exports = function(router, app_package, config) {
         router.get('/device/fetch', function(req, res){
 
             var client = config.vars.clients.storedClients[req.headers['dnbsmart-uuid']];
+
+            //Add date
+            client.currentDate = moment().format('DD.MM.YYYY');
+
             res.json(client);
 
         });

@@ -96,10 +96,28 @@ module.exports = function(config){
         //end createDailyBudget
     }
 
+    this.createTransaction = function() {
+        
+        var d = moment().format('DD.MM.YYYY');
+        if (self.finance.transactions[d] == undefined) {
+            self.finance.transactions[d] = {
+                sum: 0,
+                transactions: []
+            };
+        }
+
+    }
+
+
+    this.test = function() {
+        console.log(self.uuid + ' -  test');
+    }
+
 
     //--- RUN INIT LOGIC ---
     self.createSavingsAccounts();    
     self.createDailyBudget();
+    self.createTransaction();
 
     //end Client 
 }
