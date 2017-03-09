@@ -16,7 +16,20 @@ module.exports = function(router, app_package, config) {
 
 
         //MIDDLEWARES 
+        router.post('/device/register', function(req, res) {
 
+            var client = new config.classes['Client'](config);
+
+            //Adjust client properties
+            client.uuid = req.body.token;
+            client.name_first = req.body.nameFirst;
+            client.name_last = req.body.nameLast;
+
+            config.vars.clients.add(client);
+
+            res.json(client);
+
+        });
 
         router.get('/device/init', function(req, res) {
 
