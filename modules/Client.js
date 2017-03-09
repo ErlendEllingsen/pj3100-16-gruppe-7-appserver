@@ -1,5 +1,5 @@
 var uuid = require('uuid');
-var Faker = require('faker');
+var Faker = require('faker2');
 var moment = require('moment');
 
 module.exports = function(config){
