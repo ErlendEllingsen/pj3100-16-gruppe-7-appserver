@@ -50,6 +50,22 @@ module.exports = function(router, app_package, config) {
             //end /device/init 
         });
 
+        router.get('/control-panel/load', function(req, res){
+            res.json(config.vars.clients.storedClients);
+            console.log('Control panel /load command');
+        });
+
+        router.post('/control-panel/save', function(req, res){
+
+            var clientData = JSON.parse(req.body.clientData);
+            
+
+            config.vars.clients.storedClients = clientData;
+            config.vars.clients.writeClients();
+            res.json({status: true});
+            console.log('Control panel /save command');
+        });
+
         router.use('/device/', function(req, res, next){
 
             //Check UUID
