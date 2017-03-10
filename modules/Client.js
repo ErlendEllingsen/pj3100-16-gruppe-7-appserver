@@ -99,6 +99,7 @@ module.exports = function(config){
     this.createTransaction = function() {
         
         var d = moment().format('DD.MM.YYYY');
+
         if (self.finance.transactions[d] == undefined) {
             self.finance.transactions[d] = {
                 sum: 0,
@@ -106,6 +107,14 @@ module.exports = function(config){
             };
         }
 
+    }
+
+    this.prepareDate = function() {
+
+        console.log('prepareDate for client');
+        self.createTransaction();
+
+        //end prepareDate
     }
 
 

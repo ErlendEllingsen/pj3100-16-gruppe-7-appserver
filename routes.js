@@ -104,6 +104,13 @@ module.exports = function(router, app_package, config) {
         router.get('/device/fetch', function(req, res){
 
             var client = config.vars.clients.storedClients[req.headers['dnbsmart-uuid']];
+            var c = new config.classes['Client'](config);
+            for (var prop in client) {
+                c[prop] = client[prop];
+            }
+            client = c;
+
+            client.prepareDate();
 
             //Add date
             client.currentDate = moment().format('DD.MM.YYYY');
