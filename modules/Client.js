@@ -206,6 +206,12 @@ module.exports = function(config){
             //end sortedEventsArr loop 
         }
         
+        //The alochol level here is ~ 60 %
+        //I am unable to code further
+        //Sry
+        //I will return tomorrow in a somewhat disabled state 
+        //Sry again
+        
 
         //end calculateEventSavings
     }
