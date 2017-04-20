@@ -9,7 +9,13 @@ module.exports = function(router, app_package, config) {
     this.getClient = function(req) {
 
         var client = config.vars.clients.storedClients[req.headers['dnbsmart-uuid']];
-        //var c = new config.classes['Client'](config);
+        
+        var c = new config.classes['Client'](config);
+        for (var prop in client) {
+            c[prop] = client[prop];
+        }
+        client = c;
+        
         return client;
 
         //end getClient
@@ -128,12 +134,7 @@ module.exports = function(router, app_package, config) {
 
         router.get('/device/fetch', function(req, res){
 
-            var client = config.vars.clients.storedClients[req.headers['dnbsmart-uuid']];
-            var c = new config.classes['Client'](config);
-            for (var prop in client) {
-                c[prop] = client[prop];
-            }
-            client = c;
+            var client = self.getClient(req);
 
             client.prepareDate();
 
@@ -179,6 +180,74 @@ module.exports = function(router, app_package, config) {
                 'status': true,
                 'client': client
             });
+        });
+
+        // --- DEVICE: Events ---
+
+        router.get('/device/event/test', function(req, res){
+            var client = self.getClient(req);
+
+            res.json(client.calculateEventSavings());
+
+        });
+
+        router.get('/device/event/clear', function(req, res){
+            var client = self.getClient(req);
+
+            client.finance.events = []; //Clear the events 
+
+            self.saveClient(req, client);
+            res.json({
+                'status': true,
+                'client': client
+            });
+
+            console.log('cleared events for client ' + client.uuid);
+        });
+
+        router.get('/device/event/delete/:uuid', function(req, res){
+            var eventUuid = req.params.uuid;
+
+            var client = self.getClient(req);
+
+            //Kødd
+            var newEvts = []; 
+            for (var i = 0; i < client.finance.events.length; i++) {
+
+                var evt = client.finance.events[i];
+                if (evt.uuid == eventUuid) {
+                    //Found match
+                    continue;
+                }
+
+                newEvts.push(evt);
+            }
+
+            //Overwrite existing events array 
+            client.finance.events = newEvts;
+
+            //Save changes 
+            self.saveClient(req, client);
+
+            //Output success
+            res.json({
+                'status': true,
+                'client': client
+            });
+
+        });
+
+        router.post('/device/event/new', function(req, res){
+
+            var client = self.getClient(req);
+            client.createEvent(req.body.title, req.body.desc, req.body.sum, req.body.date);
+            self.saveClient(req, client);
+
+            res.json({
+                'status': true,
+                'client': client
+            });
+
         });
 
         //end setupRouting
