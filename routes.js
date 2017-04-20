@@ -4,6 +4,22 @@ var moment = require('moment');
 
 module.exports = function(router, app_package, config) {
 
+    var self = this; 
+
+    this.getClient = function(req) {
+
+        var client = config.vars.clients.storedClients[req.headers['dnbsmart-uuid']];
+        //var c = new config.classes['Client'](config);
+        return client;
+
+        //end getClient
+    }
+
+    this.saveClient = function(req, client) {
+        config.vars.clients.storedClients[req.headers['dnbsmart-uuid']] = client;
+        //end saveClient 
+    }
+
     this.setupRouting = function() {
 
         router.get('/', function(req, res){
@@ -15,7 +31,7 @@ module.exports = function(router, app_package, config) {
         });
 
 
-        //MIDDLEWARES 
+        // --- MIDDLEWARES ---
         router.post('/device/register', function(req, res) {
 
             var client = new config.classes['Client'](config);
@@ -25,11 +41,36 @@ module.exports = function(router, app_package, config) {
             client.name_first = req.body.nameFirst;
             client.name_last = req.body.nameLast;
 
+            //--- DEMO: Append email ---
+            if (client.uuid == 'erlend') {
+                client.email = 'erlend.ame@gmail.com'; //Set vars
+            }
+
             config.vars.clients.add(client);
 
             res.json(client);
 
         });
+
+        // --- CONTROL PANEL ACTIONS ---
+
+        router.get('/control-panel/load', function(req, res){
+            res.json(config.vars.clients.storedClients);
+            console.log('Control panel /load command');
+        });
+
+        router.post('/control-panel/save', function(req, res){
+
+            var clientData = JSON.parse(req.body.clientData);
+            
+
+            config.vars.clients.storedClients = clientData;
+            config.vars.clients.writeClients();
+            res.json({status: true});
+            console.log('Control panel /save command');
+        });
+
+        // --- DEVICE METHODS ---
 
         router.get('/device/init', function(req, res) {
 
@@ -48,22 +89,6 @@ module.exports = function(router, app_package, config) {
             return;
 
             //end /device/init 
-        });
-
-        router.get('/control-panel/load', function(req, res){
-            res.json(config.vars.clients.storedClients);
-            console.log('Control panel /load command');
-        });
-
-        router.post('/control-panel/save', function(req, res){
-
-            var clientData = JSON.parse(req.body.clientData);
-            
-
-            config.vars.clients.storedClients = clientData;
-            config.vars.clients.writeClients();
-            res.json({status: true});
-            console.log('Control panel /save command');
         });
 
         router.use('/device/', function(req, res, next){
@@ -119,8 +144,42 @@ module.exports = function(router, app_package, config) {
 
         });
 
+        // --- DEVICE: Update values ---
+        router.post('/device/update/activeSavingsAccount', function(req, res){
 
+        
+            var client = self.getClient(req);
 
+            //Validate input 
+            if (req.body.account == undefined) {
+                res.json({
+                    status: false,
+                    msg: 'Input invalid.'
+                });
+                return;
+            }
+
+            var newAccount = req.body.account; 
+
+            //Validate account 
+            if (client.finance.accounts.savings[newAccount] == undefined) {
+                res.json({
+                    status: false,
+                    msg: 'Invalid account.'
+                });
+                return;
+            }
+
+            //Update client 
+            client.finance.accounts.savings_activeAccount = newAccount; 
+            //Store client
+            self.saveClient(req, client);
+
+            res.json({
+                'status': true,
+                'client': client
+            });
+        });
 
         //end setupRouting
     }

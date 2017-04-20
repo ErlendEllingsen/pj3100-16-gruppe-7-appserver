@@ -18,7 +18,8 @@ module.exports = function(config){
     this.finance = {};
     this.finance.accounts = {
         default: Math.floor((Math.random() * config.settings.sums.max) + config.settings.sums.min),
-        savings: []
+        savings: [],
+        savings_activeAccount: 'Sparekonto' //Sparekonto is the default savings accounts.
     };
 
     //Transactions
@@ -29,7 +30,7 @@ module.exports = function(config){
         daily: 0
     };
 
-
+    // --- FUNCTIONS --- 
     this.createSavingsAccounts = function() {
 
         var userSavingsAccounts = {}; 
@@ -107,6 +108,7 @@ module.exports = function(config){
             };
         }
 
+        //end createTransaction
     }
 
     this.prepareDate = function() {
