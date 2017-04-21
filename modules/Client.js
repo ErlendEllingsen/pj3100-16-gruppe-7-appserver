@@ -28,7 +28,8 @@ module.exports = function(config){
 
     //Budgets
     this.finance.budgets = {
-        daily: 0
+        daily: 0,
+        daily_post_calculation: 0
     };
 
     //EVENTS
@@ -205,13 +206,15 @@ module.exports = function(config){
 
             //end sortedEventsArr loop 
         }
-        
+
         //The alochol level here is ~ 60 %
         //I am unable to code further
         //Sry
         //I will return tomorrow in a somewhat disabled state 
         //Sry again
-        
+
+        //Post money delegation 
+        self.finance.budgets.daily_post_calculation = moneyInPool; 
 
         //end calculateEventSavings
     }

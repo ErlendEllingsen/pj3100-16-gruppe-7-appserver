@@ -36,6 +36,19 @@ module.exports = function(router, app_package, config) {
             });
         });
 
+        // --- OTHER --- 
+        router.get('/misc/delete-all-clients', function(req, res){
+
+            //Empty the storage.
+            config.vars.clients.storedClients = {};
+            config.vars.clients.writeClients();
+            
+            res.json({
+                status: true
+            });
+
+        });
+
 
         // --- MIDDLEWARES ---
         router.post('/device/register', function(req, res) {
@@ -187,7 +200,11 @@ module.exports = function(router, app_package, config) {
         router.get('/device/event/test', function(req, res){
             var client = self.getClient(req);
 
-            res.json(client.calculateEventSavings());
+            //Create budgets!
+            client.createDailyBudget();
+            client.calculateEventSavings();
+
+            res.json(client);
 
         });
 
