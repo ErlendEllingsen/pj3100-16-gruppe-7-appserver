@@ -15,6 +15,9 @@ module.exports = function(router, app_package, config) {
             c[prop] = client[prop];
         }
         client = c;
+
+        // --- Prepare client ---
+        client.prepareDate();
         
         return client;
 
@@ -149,7 +152,7 @@ module.exports = function(router, app_package, config) {
 
             var client = self.getClient(req);
 
-            client.prepareDate();
+            
 
             //Add date
             client.currentDate = moment().format('DD.MM.YYYY');
