@@ -19,6 +19,10 @@ module.exports = function(router, app_package, config) {
         // --- Prepare client ---
         client.prepareDate();
         
+        //Add date
+        client.currentDate = moment().format('DD.MM.YYYY');
+
+        //Return the (prepared) client with calculated vars and functions..
         return client;
 
         //end getClient
@@ -151,11 +155,6 @@ module.exports = function(router, app_package, config) {
         router.get('/device/fetch', function(req, res){
 
             var client = self.getClient(req);
-
-            
-
-            //Add date
-            client.currentDate = moment().format('DD.MM.YYYY');
 
             res.json(client);
 
