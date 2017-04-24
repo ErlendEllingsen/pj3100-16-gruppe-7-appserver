@@ -19,6 +19,7 @@ module.exports = function(config){
     this.finance = {};
     this.finance.accounts = {
         default: Math.floor((Math.random() * config.settings.sums.max) + config.settings.sums.min),
+        daily_post_calculation: 0,
         savings: [],
         savings_activeAccount: 'Sparekonto' //Sparekonto is the default savings accounts.
     };
@@ -207,12 +208,6 @@ module.exports = function(config){
             //end sortedEventsArr loop 
         }
 
-        //The alochol level here is ~ 60 %
-        //I am unable to code further
-        //Sry
-        //I will return tomorrow in a somewhat disabled state 
-        //Sry again
-
         //Post money delegation 
         self.finance.budgets.daily_post_calculation = moneyInPool; 
 
@@ -225,9 +220,9 @@ module.exports = function(config){
         //end moveSavingFunds
     }
 
-    this.createTransaction = function() {
+    this.createDailyTransaction = function() {
         
-        var d = moment().format('DD.MM.YYYY');
+        var d = config.getDateFormatted();
 
         if (self.finance.transactions[d] == undefined) {
 
@@ -240,15 +235,41 @@ module.exports = function(config){
             };
         }
 
-        //end createTransaction
+        //end createDailyTransaction
     }
 
     this.prepareDate = function() {
 
         console.log('prepareDate for client');
-        self.createTransaction();
+        self.createDailyTransaction();
 
         //end prepareDate
+    }
+
+    //--- Transactions ---
+    this.createNewTransaction = function(sum) {
+
+        sum = Number(sum);
+
+        //Prepare
+        self.createDailyTransaction();
+
+        //Fetch todays usage
+        var d = config.getDateFormatted();
+
+        //Add todays transactions 
+        self.finance.transactions[d].transactions.push(sum);
+        self.finance.transactions[d].sum += sum;
+
+        //Remove the sum from the account 
+        self.finance.accounts.default -= sum; 
+
+        //end createNewTransaction
+    }
+
+    this.clearTransactions = function() {
+        self.finance.transactions = {};
+        //end clearTransactions
     }
 
     //--- Events --- 
@@ -280,7 +301,7 @@ module.exports = function(config){
     //--- RUN INIT LOGIC ---
     self.createSavingsAccounts();    
     self.createDailyBudget();
-    self.createTransaction();
+    self.createDailyTransaction();
 
     //end Client 
 }

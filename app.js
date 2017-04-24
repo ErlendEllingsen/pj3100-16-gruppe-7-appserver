@@ -93,6 +93,7 @@ if (!devmode) {
 
 
 console.log(colors.yellow('CORE') + ' Enabled ' + colors.bold('HTTP') + ' at ' + http_port);
+console.log('[' + colors.cyan('DateControl') + '] ' + 'Date is ' + colors.bold(config.getDateFormatted()));
 
 //Start functions 
 clients.init();

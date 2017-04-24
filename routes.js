@@ -18,9 +18,14 @@ module.exports = function(router, app_package, config) {
 
         // --- Prepare client ---
         client.prepareDate();
+
+        //Run business logic
+        //Budget calculation 
+        client.createDailyBudget();
+        client.calculateEventSavings();
         
         //Add date
-        client.currentDate = moment().format('DD.MM.YYYY');
+        client.currentDate = config.getDateFormatted();
 
         //Return the (prepared) client with calculated vars and functions..
         return client;
@@ -44,6 +49,13 @@ module.exports = function(router, app_package, config) {
         });
 
         // --- OTHER --- 
+        router.get('/misc/date/next', function(req, res){
+
+            //Perform date switching logic here... ;)
+
+
+        });
+
         router.get('/misc/delete-all-clients', function(req, res){
 
             //Empty the storage.
@@ -104,7 +116,7 @@ module.exports = function(router, app_package, config) {
             config.vars.clients.add(client);
 
             //Add date
-            client.currentDate = moment().format('DD.MM.YYYY');
+            client.currentDate = config.getDateFormatted();
 
             res.json(client);
 
@@ -197,14 +209,38 @@ module.exports = function(router, app_package, config) {
             });
         });
 
+        // --- DEVICE: Transactions ---
+        router.post('/device/transaction/new', function(req, res){
+            var client = self.getClient(req);
+            client.createNewTransaction(req.body.sum);
+            self.saveClient(req, client);
+            res.json({
+                'status': true,
+                'client': client
+            });
+
+        });
+
+        router.get('/device/transaction/clear', function(req, res){
+            var client = self.getClient(req);
+            client.clearTransactions();
+            self.saveClient(req, client);
+            res.json({
+                'status': true,
+                'client': client
+            });
+        });
+
         // --- DEVICE: Events ---
 
         router.get('/device/event/test', function(req, res){
             var client = self.getClient(req);
 
-            //Create budgets!
-            client.createDailyBudget();
-            client.calculateEventSavings();
+            //Budget calculation and other client buisiness logic is now called from getClient..
+            //And therefore is ran at every possible opportunity, which is a good thing... 
+            //But in a production environment it would probably cause much more load than needed.
+            //But for the sake of this assignment/project, a minimum viable product is our goal and therefore we 
+            //decided to favor more working features than (very) complex and optimized server features.
 
             res.json(client);
 
