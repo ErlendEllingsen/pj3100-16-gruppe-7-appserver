@@ -49,11 +49,34 @@ module.exports = function(router, app_package, config) {
         });
 
         // --- OTHER --- 
+        router.get('/misc/simulate-rollover', function(req, res){
+            
+            //Simulate rollover performs: 
+            //1. nextDate() 
+            //2. createDailyTransaction()
+                // ^ - this transfers the remainder of the daily budget to the specified savings account.
+
+            //Which methods to call? 
+            
+            
+            res.json({
+                status: true
+            });
+
+        });
+
+        router.get('/misc/date/get', function(req, res){
+            res.json({
+                status: true,
+                date: config.getDateFormatted()
+            });
+        });
+
         router.get('/misc/date/next', function(req, res){
-
-            //Perform date switching logic here... ;)
-
-
+            config.nextDate();
+             res.json({
+                status: true
+            });
         });
 
         router.get('/misc/delete-all-clients', function(req, res){

@@ -92,6 +92,8 @@ if (!devmode) {
 }
 
 
+console.log('[' + colors.green('DnB Smart') + '] Welcome to API/Backend version ' + colors.bold(app_package.version));
+
 console.log(colors.yellow('CORE') + ' Enabled ' + colors.bold('HTTP') + ' at ' + http_port);
 console.log('[' + colors.cyan('DateControl') + '] ' + 'Date is ' + colors.bold(config.getDateFormatted()));
 
