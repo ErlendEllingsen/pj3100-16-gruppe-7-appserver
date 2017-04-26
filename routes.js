@@ -11,6 +11,8 @@ module.exports = function(router, app_package, config) {
         var client = config.vars.clients.storedClients[req.headers['dnbsmart-uuid']];
         
         var c = new config.classes['Client'](config);
+        
+        //Overwrite settings
         for (var prop in client) {
             c[prop] = client[prop];
         }
@@ -49,22 +51,6 @@ module.exports = function(router, app_package, config) {
         });
 
         // --- OTHER --- 
-        router.get('/misc/simulate-rollover', function(req, res){
-            
-            //Simulate rollover performs: 
-            //1. nextDate() 
-            //2. createDailyTransaction()
-                // ^ - this transfers the remainder of the daily budget to the specified savings account.
-
-            //Which methods to call? 
-            
-            
-            res.json({
-                status: true
-            });
-
-        });
-
         router.get('/misc/date/get', function(req, res){
             res.json({
                 status: true,
@@ -96,6 +82,7 @@ module.exports = function(router, app_package, config) {
         router.post('/device/register', function(req, res) {
 
             var client = new config.classes['Client'](config);
+            client.init(true);
 
             //Adjust client properties
             client.uuid = req.body.token;
@@ -136,6 +123,7 @@ module.exports = function(router, app_package, config) {
         router.get('/device/init', function(req, res) {
 
             var client = new config.classes['Client'](config);
+            client.init(true);
             config.vars.clients.add(client);
 
             //Add date
@@ -152,6 +140,7 @@ module.exports = function(router, app_package, config) {
             //end /device/init 
         });
 
+        /// --- DEVICE MIDDLEWARE ---
         router.use('/device/', function(req, res, next){
 
             //Check UUID
@@ -182,6 +171,8 @@ module.exports = function(router, app_package, config) {
 
             //end /device/*
         });
+
+        
 
         router.get('/device/fetchAll', function(req, res){
             res.json(config.vars.clients.storedClients);
@@ -324,6 +315,28 @@ module.exports = function(router, app_package, config) {
             res.json({
                 'status': true,
                 'client': client
+            });
+
+        });
+
+        // --- DEVICE: Rollover ---
+        router.get('/device/simulate-rollover', function(req, res){
+            
+            var client = self.getClient(req);
+            
+            //Simulate rollover performs: 
+            //1. config.nextDate() 
+            //2. createDailyTransaction()
+                // ^ - this transfers the remainder of the daily budget to the specified savings account.
+
+            config.nextDate();
+            client.createDailyTransaction();
+
+            self.saveClient(req, client);
+            
+            
+            res.json({
+                status: true
             });
 
         });

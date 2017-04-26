@@ -18,8 +18,14 @@ module.exports = function() {
     }
 
     this.getDateFormatted = function() {
-        return self.getDate().format('DD.MM.YYYY');
+        return moment(self.getDate()).format('DD.MM.YYYY');
         //end getDateFormatted
+    }
+
+    this.getPrevDateFormatted = function() {
+        var m = new moment(self.serverDate.date);
+        m.subtract(1, 'days');
+        return m.format('DD.MM.YYYY');
     }
 
     this.nextDate = function() {

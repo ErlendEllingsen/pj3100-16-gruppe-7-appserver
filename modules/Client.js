@@ -94,8 +94,8 @@ module.exports = function(config){
 
     this.createDailyBudget = function() {
 
-        var a = moment().endOf('month');
-        var b = moment().today;
+        var a = moment(config.getDate()).endOf('month');
+        var b = moment(config.getDate()).today;
         var days = a.diff(b, 'days');
 
         self.finance.budgets.daily = Math.floor(self.finance.accounts.default / days);
@@ -151,9 +151,11 @@ module.exports = function(config){
         But this might be a good thing, because the app is supposed to be extremely easy to use.
         */
 
-        var a = moment().endOf('month');
-        var b = moment().today;
+        var a = moment(config.getDate()).endOf('month');
+        var b = moment(config.getDate());
         var days = a.diff(b, 'days');
+
+        days++; //Always add 1 day... because we need to divide for today as well..
 
         //CALCULATE DB
         //We've got what we need to calculate the DB
@@ -176,7 +178,7 @@ module.exports = function(config){
 
             //Calculate timespan (event_time - NOW )
             var a = event.date;
-            var b = moment().today;
+            var b = moment(config.getDate());
             var days = a.diff(b, 'days');
 
             var eventMoneyRequired = Number(event.sum);
@@ -217,6 +219,75 @@ module.exports = function(config){
     this.moveSavingFunds = function() {
         //To be called after calculateEventSavings 
 
+        //1. Decide the sum to be moved.
+        //2. Where to move from
+        //3. Where to move to? 
+
+        //Daily budget - todays transactions 
+        var prevD = config.getPrevDateFormatted();
+
+        //Check if previous date was not established, not rolling over if soo....
+        if (self.finance.transactions[prevD] == undefined) {
+            console.log('[' + colors.red('ROLLOVER') + '] Not rolling over. Previous date was not set (' + self.prevD + ')');
+            return;
+        }
+
+        console.log('[' + colors.red('ROLLOVER') + '] Rollover starting - ' + self.uuid + '!!');
+
+        
+
+        //--- Calculation --
+        var usedSum = self.finance.transactions[prevD].sum;
+
+        var restSum = (self.finance.budgets.daily - usedSum);
+
+        //restSum should be divided into two posts: 
+        
+        //SUM: This should be moved to SAVINGS if possible.
+        var savingsForEvent = (self.finance.budgets.daily - self.finance.budgets.daily_post_calculation);
+
+        
+
+        //--- CHECKS --
+        
+        if (restSum < 0) {
+            //The user has used too much money..
+            console.log('Not rolling over... Restsum was negative (' + restSum + ')');
+            return false;
+        }
+
+        if (savingsForEvent > restSum) {
+            savingsForEvent = restSum;
+            console.log('Down-scaling savingsForEvent (' + savingsForEvent + ')');
+        }
+        
+        //Transfer to event 
+        if (savingsForEvent > 0) {
+
+            //Sum to transfer:
+            //savingsForEvent 
+            self.finance.accounts.default -= savingsForEvent;
+            self.finance.accounts.savings['Sparekonto'].balance += savingsForEvent;
+        
+            //end transfer to event (default savings account)
+        }   
+
+        //The REST of this should be moved to SELECT savings account.
+        var savingsExtra = (restSum - savingsForEvent); 
+
+        //Transfer extra 
+        if (savingsExtra > 0) {
+
+            //Sum to transfer:
+            self.finance.accounts.default -= savingsExtra;
+            self.finance.accounts.savings[self.finance.accounts.savings_activeAccount].balance += savingsExtra;
+
+            //end transfer to extra (user set savings account)
+        }
+
+        console.log('Rollover data: ' + colors.bold('restSum: ') + restSum + ' ' + colors.bold('savingsForEvent: ') + 
+            savingsForEvent + colors.bold('savingsExtra: ') + savingsExtra);
+
         //end moveSavingFunds
     }
 
@@ -224,15 +295,20 @@ module.exports = function(config){
         
         var d = config.getDateFormatted();
 
-        if (self.finance.transactions[d] == undefined) {
+        var todayNotSet = (self.finance.transactions[d] == undefined); 
+ 
+        if (todayNotSet) {
 
-            //Date has changed. Perform saving actions. 
-            
-
+            //Set new object 
             self.finance.transactions[d] = {
                 sum: 0,
                 transactions: []
             };
+
+            //Date has changed. Perform saving actions. 
+            self.moveSavingFunds();
+
+            
         }
 
         //end createDailyTransaction
@@ -268,6 +344,7 @@ module.exports = function(config){
     }
 
     this.clearTransactions = function() {
+        console.log('clearing transactions...');
         self.finance.transactions = {};
         //end clearTransactions
     }
@@ -298,10 +375,18 @@ module.exports = function(config){
     }
 
 
-    //--- RUN INIT LOGIC ---
-    self.createSavingsAccounts();    
-    self.createDailyBudget();
-    self.createDailyTransaction();
+    //--- RUN INIT LOGIC --- (Must be called)
+    this.init = function(create) {
+        
+        if (create == undefined) create = false; 
+
+        self.createSavingsAccounts();    
+        self.createDailyBudget();
+        if (!create) self.createDailyTransaction();
+
+        //end init
+    }
+    
 
     //end Client 
 }
