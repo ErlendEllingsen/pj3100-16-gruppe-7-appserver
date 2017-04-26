@@ -98,6 +98,8 @@ module.exports = function(config){
         var b = moment(config.getDate()).today;
         var days = a.diff(b, 'days');
 
+        days++;
+
         self.finance.budgets.daily = Math.floor(self.finance.accounts.default / days);
 
         //end createDailyBudget
