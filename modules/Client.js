@@ -105,7 +105,7 @@ module.exports = function(config){
         //end createDailyBudget
     }
 
-    //Motherfucking daily budget MASTER alien calculation algorithm 
+    //mfucking daily budget MASTER alien calculation algorithm 
     this.calculateEventSavings = function() {
 
         //(╯°□°）╯︵ ┻━┻ LETS GOOOOOO
@@ -125,7 +125,7 @@ module.exports = function(config){
 
         /*
 
-        ## ALGORITHM DESCRIPTION ##  //Alcohol level 10%
+        ## ALGORITHM DESCRIPTION ##  
 
         - Let's talk about *Money in pool* (MIP) -
          How is it calculated?
@@ -148,8 +148,8 @@ module.exports = function(config){
         If the user uses more than the daily budget the saving goals will just be expanded further.
         Calculations of daily budgets and saving goals are done continiously whenver the user is executing transactions.
         
-        - And what the hell does that mean? xddddd xD :P also: fml a little -  //Alcohol level 40%
-        This means that budgets are eXtReMeLy variating, at least in this version of the algorithm :P xD ^^
+        - And what the hell does that mean? xddddd xD :P also: fml a little
+        This means that budgets are eXtReMeLy variating, at least in this version of the algorithm 
         But this might be a good thing, because the app is supposed to be extremely easy to use.
         */
 
